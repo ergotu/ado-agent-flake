@@ -95,14 +95,17 @@ let
     wantedBy = [ "multi-user.target" ];
 
     environment =
+      let
+        agentDir = "/var/lib/azure-pipelines-agent/${instanceName}";
+      in
       {
-        AGENT_DISABLEUPDATE = "1";
+        AGENT_ROOT = agentDir;
+        AGENT_DIAGLOGPATH = "${agentDir}/_diag";
       }
       // inst.extraEnvironment;
 
     path = [
       inst.package
-      pkgs.git
     ] ++ inst.extraPackages;
 
     serviceConfig =
@@ -132,22 +135,17 @@ let
         StateDirectory = stateDir;
         WorkingDirectory = agentDir;
 
-        # Configure the agent if not already configured
         ExecStartPre = "!${pkgs.writeShellScript "configure-azure-pipelines-agent-${instanceName}" ''
+          export AGENT_ROOT="${agentDir}"
           if [ ! -f "${agentDir}/.credentials" ]; then
-            # Copy agent files to the state directory so config.sh can write alongside them
-            if [ ! -f "${agentDir}/config.sh" ]; then
-              cp -r ${inst.package}/share/azure-pipelines-agent/* "${agentDir}/"
-              chmod -R u+w "${agentDir}/"
-            fi
-            cd "${agentDir}"
-            ./config.sh ${configArgs}
+            mkdir -p "${agentDir}"
+            ${inst.package}/bin/config.sh ${configArgs}
           fi
         ''}";
 
         ExecStart = "${pkgs.writeShellScript "run-azure-pipelines-agent-${instanceName}" ''
-          cd "${agentDir}"
-          exec ./run.sh
+          export AGENT_ROOT="${agentDir}"
+          exec ${inst.package}/bin/run.sh
         ''}";
 
         ExecStopPost = lib.mkDefault "";

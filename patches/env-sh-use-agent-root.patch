@@ -1,0 +1,32 @@
+diff --git a/src/Misc/layoutroot/env.sh b/src/Misc/layoutroot/env.sh
+--- a/src/Misc/layoutroot/env.sh
++++ b/src/Misc/layoutroot/env.sh
+@@ -16,10 +16,10 @@
+
+ envContents=""
+
+-if [ -f ".env" ]; then
+-    envContents=`cat .env`
++if [ -f "${AGENT_ROOT:-.}/.env" ]; then
++    envContents=`cat "${AGENT_ROOT:-.}/.env"`
+ else
+-    touch .env
++    touch "${AGENT_ROOT:-.}/.env"
+ fi
+
+ function writeVar()
+@@ -29,12 +29,12 @@
+     if test "${envContents#*$checkDelim}" = "$envContents"
+     then
+         if [ ! -z "${!checkVar}" ]; then
+-            echo "${checkVar}=${!checkVar}">>.env
++            echo "${checkVar}=${!checkVar}">>"${AGENT_ROOT:-.}/.env"
+         fi
+     fi
+ }
+
+-echo $PATH>.path
++echo $PATH>"${AGENT_ROOT:-.}/.path"
+
+ for var_name in ${varCheckList[@]}
+ do

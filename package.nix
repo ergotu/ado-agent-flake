@@ -1,112 +1,151 @@
 {
+  buildDotnetModule,
+  dotnetCorePackages,
+  fetchFromGitHub,
+  gitMinimal,
+  glibc,
   lib,
+  nodejs_20,
   stdenv,
-  fetchurl,
-  autoPatchelfHook,
-  makeWrapper,
-  libkrb5,
-  zlib,
-  icu,
-  openssl,
-  lttng-ust_2_12,
-  git,
+  buildPackages,
+  runtimeShell,
 }:
 
-let
+buildDotnetModule (finalAttrs: {
+  pname = "azure-pipelines-agent";
   version = "4.268.0";
 
-  sources = {
-    x86_64-linux = {
-      url = "https://download.agent.dev.azure.com/agent/${version}/vsts-agent-linux-x64-${version}.tar.gz";
-      hash = "sha256-ACiOE2lrHvDmgXsyt4CrGX9wIv5WACHWISIkr/Wl5BE=";
-    };
-    aarch64-linux = {
-      url = "https://download.agent.dev.azure.com/agent/${version}/vsts-agent-linux-arm64-${version}.tar.gz";
-      hash = "sha256-/mA3v8l/a74KOlk6HGA3kLqXkzYmQqmcG2M260N4IUM=";
-    };
+  src = fetchFromGitHub {
+    owner = "microsoft";
+    repo = "azure-pipelines-agent";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-Cq10gqOlPBTc68beqHZAE6R1vPSJ3A0AqoaCrKuBtIM=";
   };
 
-  currentSource =
-    sources.${stdenv.hostPlatform.system}
-      or (throw "Unsupported system: ${stdenv.hostPlatform.system}");
-in
-stdenv.mkDerivation {
-  pname = "azure-pipelines-agent";
-  inherit version;
-
-  src = fetchurl {
-    inherit (currentSource) url hash;
-  };
-
-  sourceRoot = ".";
-
-  nativeBuildInputs = [
-    autoPatchelfHook
-    makeWrapper
+  patches = [
+    ./patches/agent-root-knob.patch
+    ./patches/env-sh-use-agent-root.patch
   ];
 
-  buildInputs = [
-    stdenv.cc.cc.lib
-    libkrb5
-    zlib
-    icu
-    openssl
-    lttng-ust_2_12
-  ];
-
-  # Libraries loaded via dlopen at runtime
-  runtimeDependencies = [
-    stdenv.cc.cc.lib
-    libkrb5
-    zlib
-    icu
-    openssl
-    lttng-ust_2_12
-  ];
-
-  dontBuild = true;
-
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p $out/share/azure-pipelines-agent
-    cp -r . $out/share/azure-pipelines-agent/
-
-    # Remove bundled git — we provide our own via PATH
-    rm -rf $out/share/azure-pipelines-agent/externals/git
-
-    mkdir -p $out/bin
-
-    # Wrapper for config.sh
-    makeWrapper $out/share/azure-pipelines-agent/config.sh $out/bin/azure-pipelines-agent-config \
-      --set AGENT_DISABLEUPDATE 1 \
-      --prefix PATH : ${lib.makeBinPath [ git ]}
-
-    # Wrapper for run.sh
-    makeWrapper $out/share/azure-pipelines-agent/run.sh $out/bin/azure-pipelines-agent-run \
-      --set AGENT_DISABLEUPDATE 1 \
-      --prefix PATH : ${lib.makeBinPath [ git ]}
-
-    # Wrapper for env.sh
-    makeWrapper $out/share/azure-pipelines-agent/env.sh $out/bin/azure-pipelines-agent-env \
-      --set AGENT_DISABLEUPDATE 1 \
-      --prefix PATH : ${lib.makeBinPath [ git ]}
-
-    runHook postInstall
+  # Add nuget.org so nuget-to-json can resolve standard packages
+  postPatch = ''
+    substituteInPlace src/NuGet.Config \
+      --replace-fail '</packageSources>' \
+        '<add key="nuget.org" value="https://api.nuget.org/v3/index.json"/></packageSources>'
   '';
 
-  # The agent ships with its own copy of Node.js in externals/ — let autoPatchelf fix those too
-  dontPatchShebangs = false;
+  dotnet-sdk = dotnetCorePackages.sdk_8_0;
+  dotnet-runtime = dotnetCorePackages.runtime_8_0;
+  nugetDeps = ./deps.json;
 
-  meta = with lib; {
+  projectFile = [
+    "src/Microsoft.VisualStudio.Services.Agent/Microsoft.VisualStudio.Services.Agent.csproj"
+    "src/Agent.Listener/Agent.Listener.csproj"
+    "src/Agent.Worker/Agent.Worker.csproj"
+    "src/Agent.PluginHost/Agent.PluginHost.csproj"
+    "src/Agent.Sdk/Agent.Sdk.csproj"
+    "src/Agent.Plugins/Agent.Plugins.csproj"
+  ];
+
+  dotnetFlags = [
+    "-p:PackageRuntime=${dotnetCorePackages.systemToDotnetRid stdenv.hostPlatform.system}"
+    "-p:TargetFrameworks=net8.0"
+  ];
+
+  # Git repo needed for GenerateConstant MSBuild target (git rev-parse HEAD)
+  unpackPhase = ''
+    cp -r $src $TMPDIR/src
+    chmod -R +w $TMPDIR/src
+    cd $TMPDIR/src
+    (
+      export PATH=${buildPackages.git}/bin:$PATH
+      export HOME=$TMPDIR
+      git init
+      git config user.email "root@localhost"
+      git config user.name "root"
+      git add .
+      git commit -m "v${finalAttrs.version}"
+    )
+  '';
+
+  postConfigure = ''
+    dotnet msbuild \
+      -t:GenerateConstant \
+      -p:ContinuousIntegrationBuild=true \
+      -p:Deterministic=true \
+      -p:PackageRuntime="${dotnetCorePackages.systemToDotnetRid stdenv.hostPlatform.system}" \
+      -p:AgentVersion="${finalAttrs.version}" \
+      src/dir.proj
+  '';
+
+  nativeBuildInputs = [
+    gitMinimal
+  ];
+
+  postInstall = ''
+    # Install shell scripts from layoutroot
+    install -m755 src/Misc/layoutroot/config.sh $out/lib/azure-pipelines-agent/
+    install -m755 src/Misc/layoutroot/run.sh    $out/lib/azure-pipelines-agent/
+    install -m755 src/Misc/layoutroot/env.sh    $out/lib/azure-pipelines-agent/
+
+    # Fix config.sh: use Nix-provided ldd, point ldd checks at .NET runtime libs
+    substituteInPlace $out/lib/azure-pipelines-agent/config.sh \
+      --replace-fail 'command -v ldd' 'command -v ${glibc.bin}/bin/ldd' \
+      --replace-fail 'ldd ./bin' '${glibc.bin}/bin/ldd ${finalAttrs.dotnet-runtime}/share/dotnet/shared/Microsoft.NETCore.App/${finalAttrs.dotnet-runtime.version}/' \
+      --replace-fail './bin/Agent.Listener' "$out/bin/Agent.Listener"
+
+    # Bypass ldconfig ICU check (Nix guarantees deps are present)
+    substituteInPlace $out/lib/azure-pipelines-agent/config.sh \
+      --replace-fail '$LDCONFIG -NXv "''${libpath//:/}" 2>&1 | grep libicu >/dev/null 2>&1' 'true'
+
+    # Fix run.sh: use wrapped Agent.Listener binary
+    substituteInPlace $out/lib/azure-pipelines-agent/run.sh \
+      --replace-fail '"$DIR"/bin/Agent.Listener' "$out/bin/Agent.Listener"
+
+    # Link Nix-provided Node.js for task execution
+    mkdir -p $out/lib/externals
+    ln -s ${nodejs_20} $out/lib/externals/node20_1
+
+    # Wrapper args for all executables
+    makeWrapperArgs+=(
+      --run 'export AGENT_ROOT="''${AGENT_ROOT:-"$HOME/.azure-pipelines-agent"}"'
+      --run 'mkdir -p "$AGENT_ROOT"'
+      --set AGENT_DISABLEUPDATE 1
+      --prefix PATH : ${lib.makeBinPath [ gitMinimal ]}
+      --chdir "$out"
+    )
+  '';
+
+  executables = [
+    "config.sh"
+    "run.sh"
+    "env.sh"
+    "Agent.Listener"
+    "Agent.Worker"
+    "Agent.PluginHost"
+  ];
+
+  doInstallCheck = true;
+  installCheckPhase = ''
+    runHook preInstallCheck
+    export AGENT_ROOT="$TMPDIR"
+    version=$($out/bin/Agent.Listener --version)
+    if [[ "$version" != "${finalAttrs.version}" ]]; then
+      printf 'Unexpected version: %s\n' "$version"
+      exit 1
+    fi
+    runHook postInstallCheck
+  '';
+
+  meta = {
     description = "Azure DevOps Pipelines self-hosted agent";
     homepage = "https://github.com/microsoft/azure-pipelines-agent";
-    license = licenses.mit;
+    license = lib.licenses.mit;
     platforms = [
       "x86_64-linux"
       "aarch64-linux"
     ];
-    sourceProvenance = with sourceTypes; [ binaryNativeCode ];
-    mainProgram = "azure-pipelines-agent-run";
+    sourceProvenance = with lib.sourceTypes; [ fromSource ];
+    mainProgram = "run.sh";
   };
-}
+})

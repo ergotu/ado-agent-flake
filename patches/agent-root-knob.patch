@@ -1,0 +1,48 @@
+diff --git a/src/Agent.Sdk/Knob/AgentKnobs.cs b/src/Agent.Sdk/Knob/AgentKnobs.cs
+--- a/src/Agent.Sdk/Knob/AgentKnobs.cs
++++ b/src/Agent.Sdk/Knob/AgentKnobs.cs
+@@ -79,3 +79,9 @@
+             new BuiltInDefaultKnobSource(string.Empty));
+ 
++        public static readonly Knob AgentRootDirectory = new Knob(
++            nameof(AgentRootDirectory),
++            "The root directory for the agent. Overrides the default (parent of binary directory).",
++            new EnvironmentKnobSource("AGENT_ROOT"),
++            new BuiltInDefaultKnobSource(string.Empty));
++
+         public static readonly Knob OverwriteTemp = new Knob(
+diff --git a/src/Microsoft.VisualStudio.Services.Agent/HostContext.cs b/src/Microsoft.VisualStudio.Services.Agent/HostContext.cs
+--- a/src/Microsoft.VisualStudio.Services.Agent/HostContext.cs
++++ b/src/Microsoft.VisualStudio.Services.Agent/HostContext.cs
+@@ -234,7 +234,7 @@
+ 
+                 case WellKnownDirectory.Externals:
+                     path = Path.Combine(
+-                        GetDirectory(WellKnownDirectory.Root),
++                        new DirectoryInfo(GetDirectory(WellKnownDirectory.Bin)).Parent.FullName,
+                         Constants.Path.ExternalsDirectory);
+                     break;
+ 
+@@ -252,3 +252,7 @@
+                 case WellKnownDirectory.Root:
+-                    path = new DirectoryInfo(GetDirectory(WellKnownDirectory.Bin)).Parent.FullName;
++                    path = AgentKnobs.AgentRootDirectory.GetValue(this).AsString();
++                    if (string.IsNullOrEmpty(path))
++                    {
++                        path = new DirectoryInfo(GetDirectory(WellKnownDirectory.Bin)).Parent.FullName;
++                    }
+                     break;
+@@ -362,6 +362,10 @@
+             }
+ 
+-            return Path.Combine(
+-                new DirectoryInfo(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Parent.FullName,
+-                Constants.Path.DiagDirectory);
++            var agentRoot = Environment.GetEnvironmentVariable("AGENT_ROOT");
++            if (string.IsNullOrEmpty(agentRoot))
++            {
++                agentRoot = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Parent.FullName;
++            }
++
++            return Path.Combine(agentRoot, Constants.Path.DiagDirectory);
+         }
