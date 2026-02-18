@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:nixos.wiki)",
+      "WebFetch(domain:nix.dev)",
+      "WebFetch(domain:mynixos.com)",
+      "WebFetch(domain:ryantm.github.io)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:sekun.net)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:flake.parts)",
+      "Bash(nix:*)",
+      "Bash(gh release list:*)",
+      "Bash(nix-shell -p jq --run 'jq -r \"\".[] | select\\(.prerelease == false\\) | .tag_name\"\" | head -10')",
+      "Bash(nix-prefetch-url:*)",
+      "Bash(nix-shell:*)",
+      "Bash(git add:*)",
+      "Bash(jj status:*)",
+      "Bash(jj diff:*)",
+      "Bash(jj log:*)",
+      "Bash(jj commit -m \"$\\(cat <<''EOF''\nAdd Nix flake for Azure DevOps Pipelines agent\n\nPackage the Azure DevOps Pipelines self-hosted agent \\(v4.268.0\\) as a\nNix derivation with autoPatchelfHook for prebuilt .NET binaries, and\nprovide a NixOS module for running it as a systemd service.\n\n- flake.nix: flake-parts based, x86_64-linux + aarch64-linux\n- package.nix: fetchurl from Azure CDN, autoPatchelfHook, wrapper scripts\n- module.nix: services.azure-pipelines-agent.instances.<name> with PAT auth,\n  extraPackages, systemd hardening\nEOF\n\\)\")"
+    ]
+  }
+}
