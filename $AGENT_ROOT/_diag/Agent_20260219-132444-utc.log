@@ -1,0 +1,244 @@
+﻿[2026-02-19 13:24:44Z INFO HostContext] HTTP Trace Environment Variable: ''
+[2026-02-19 13:24:44Z INFO HostContext] HTTP trace not enabled - environment variable not set or false
+[2026-02-19 13:24:44Z VERB AgentProcess] Entering MainAsync
+[2026-02-19 13:24:44Z INFO AgentProcess] Agent package linux-x64.
+[2026-02-19 13:24:44Z INFO AgentProcess] Running on Linux (X64).
+[2026-02-19 13:24:44Z INFO AgentProcess] RuntimeInformation: NixOS 26.05 (Yarara).
+[2026-02-19 13:24:44Z VERB Terminal] Entering Initialize
+[2026-02-19 13:24:44Z INFO AgentProcess] Version: 4.268.0
+[2026-02-19 13:24:44Z INFO AgentProcess] Commit: 64b79ac46424365c605a07c1dc5aee18e00fb43a
+[2026-02-19 13:24:44Z INFO AgentProcess] Culture: en-US
+[2026-02-19 13:24:44Z INFO AgentProcess] UI Culture: en-US
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO AgentProcess] Validating directory permissions for: '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z VERB PromptManager] Entering Initialize
+[2026-02-19 13:24:44Z INFO HostContext] Setting up value for origin: Configure.Password
+[2026-02-19 13:24:44Z INFO HostContext] Value is empty.
+[2026-02-19 13:24:44Z INFO HostContext] Setting up value for origin: Configure.ProxyPassword
+[2026-02-19 13:24:44Z INFO HostContext] Value is empty.
+[2026-02-19 13:24:44Z INFO HostContext] Setting up value for origin: Configure.SslClientCert
+[2026-02-19 13:24:44Z INFO HostContext] Value is empty.
+[2026-02-19 13:24:44Z INFO HostContext] Setting up value for origin: Configure.Token
+[2026-02-19 13:24:44Z INFO HostContext] Value is empty.
+[2026-02-19 13:24:44Z INFO HostContext] Setting up value for origin: Configure.WindowsLogonPassword
+[2026-02-19 13:24:44Z INFO HostContext] Value is empty.
+[2026-02-19 13:24:44Z INFO HostContext] Setting up value for origin: Configure.TenantId
+[2026-02-19 13:24:44Z INFO HostContext] Value is empty.
+[2026-02-19 13:24:44Z INFO HostContext] Setting up value for origin: Configure.ClientId
+[2026-02-19 13:24:44Z INFO HostContext] Value is empty.
+[2026-02-19 13:24:44Z INFO HostContext] Setting up value for origin: Configure.ClientSecret
+[2026-02-19 13:24:44Z INFO HostContext] Value is empty.
+[2026-02-19 13:24:44Z INFO CommandSettings] Configure {
+  "AcceptTeeEula": false,
+  "AddDeploymentGroupTags": false,
+  "AddEnvironmentVirtualMachineResourceTags": false,
+  "AddMachineGroupTags": false,
+  "AlwaysExtractTask": false,
+  "Agent": null,
+  "CollectionName": null,
+  "DeploymentGroup": false,
+  "DeploymentGroupName": null,
+  "DeploymentGroupTags": null,
+  "DeploymentPool": false,
+  "DeploymentPoolName": null,
+  "EnableServiceSidTypeUnrestricted": false,
+  "EnvironmentVMResource": false,
+  "EnvironmentName": null,
+  "EnvironmentVMResourceTags": null,
+  "GitUseSChannel": false,
+  "DisableLogUploads": false,
+  "ReStreamLogsToFiles": false,
+  "MachineGroup": false,
+  "MachineGroupName": null,
+  "MachineGroupTags": null,
+  "MonitorSocketAddress": null,
+  "NotificationPipeName": null,
+  "NotificationSocketAddress": null,
+  "NoRestart": false,
+  "OverwriteAutoLogon": false,
+  "Pool": null,
+  "ProjectName": null,
+  "ProxyPassword": null,
+  "ProxyUserName": null,
+  "ProxyUrl": null,
+  "UseBasicAuthForProxy": false,
+  "Replace": false,
+  "RunAsAutoLogon": false,
+  "RunAsService": false,
+  "RunOnce": false,
+  "PreventServiceStart": false,
+  "SslCACert": null,
+  "SslClientCert": null,
+  "SslClientCertArchive": null,
+  "SslClientCertKey": null,
+  "SslClientCertPassword": null,
+  "SslSkipCertValidation": false,
+  "Url": null,
+  "WindowsLogonAccount": null,
+  "WindowsLogonPassword": null,
+  "Work": null,
+  "Auth": null,
+  "LaunchBrowser": false,
+  "Password": null,
+  "Token": null,
+  "Unattended": false,
+  "UserName": null,
+  "ClientId": null,
+  "TenantId": null,
+  "ClientSecret": null,
+  "Help": true,
+  "Version": false
+}
+[2026-02-19 13:24:44Z INFO AgentProcess] Command line arguments parsed successfully - ready for command execution
+[2026-02-19 13:24:44Z VERB Agent] Entering Initialize
+[2026-02-19 13:24:44Z VERB AgentProcess] Delegating command execution to Agent service
+[2026-02-19 13:24:44Z VERB Agent] Entering ExecuteCommand
+[2026-02-19 13:24:44Z VERB Agent] Initializing core services...
+[2026-02-19 13:24:44Z VERB VstsAgentWebProxy] Entering Initialize
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO HostContext] Well known config file 'Proxy': '/home/ergotu/.azure-pipelines-agent/.proxy'
+[2026-02-19 13:24:44Z VERB VstsAgentWebProxy] Proxy address: 
+[2026-02-19 13:24:44Z INFO VstsAgentWebProxy] No proxy setting found.
+[2026-02-19 13:24:44Z VERB AgentCertificateManager] Entering Initialize
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO HostContext] Well known config file 'Certificates': '/home/ergotu/.azure-pipelines-agent/.certificates'
+[2026-02-19 13:24:44Z INFO AgentCertificateManager] No certificate setting found.
+[2026-02-19 13:24:44Z VERB ConfigurationManager] Entering Initialize
+[2026-02-19 13:24:44Z VERB ConfigurationManager] Creating _store
+[2026-02-19 13:24:44Z VERB ConfigurationStore] Entering Initialize
+[2026-02-19 13:24:44Z INFO ConfigurationStore] currentAssemblyLocation: {0}
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Bin': '/nix/store/q3jx690067hi0jx5qjq0i0ivcri99dpw-azure-pipelines-agent-4.268.0/lib/azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO ConfigurationStore] binPath: {0}
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO ConfigurationStore] RootFolder: {0}
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO HostContext] Well known config file 'Agent': '/home/ergotu/.azure-pipelines-agent/.agent'
+[2026-02-19 13:24:44Z INFO ConfigurationStore] ConfigFilePath: {0}
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO HostContext] Well known config file 'Credentials': '/home/ergotu/.azure-pipelines-agent/.credentials'
+[2026-02-19 13:24:44Z INFO ConfigurationStore] CredFilePath: {0}
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO HostContext] Well known config file 'Service': '/home/ergotu/.azure-pipelines-agent/.service'
+[2026-02-19 13:24:44Z INFO ConfigurationStore] ServiceConfigFilePath: {0}
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO HostContext] Well known config file 'Autologon': '/home/ergotu/.azure-pipelines-agent/.autologon'
+[2026-02-19 13:24:44Z INFO ConfigurationStore] AutoLogonSettingsFilePath: {0}
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO HostContext] Well known config file 'Options': '/home/ergotu/.azure-pipelines-agent/.options'
+[2026-02-19 13:24:44Z INFO ConfigurationStore] RuntimeOptionsFilePath: {0}
+[2026-02-19 13:24:44Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:24:44Z INFO HostContext] Well known config file 'SetupInfo': '/home/ergotu/.azure-pipelines-agent/.setup_info'
+[2026-02-19 13:24:44Z INFO ConfigurationStore] SetupInfoFilePath: {0}
+[2026-02-19 13:24:44Z VERB ConfigurationManager] store created
+[2026-02-19 13:24:44Z VERB LocationServer] Entering Initialize
+[2026-02-19 13:24:44Z INFO Terminal] WRITE LINE: CLI-WIDTH-TOTAL-(105-CHARS)------------------------------------------------------------------------------
+./config.sh [options]
+
+For unconfigure help, see: ./config.sh remove --help
+
+CLI-WIDTH-OPTIONS-(35-CHARS)-------CLI-WIDTH-DESCRIPTION-(70-CHARS)--------------------------------------
+Common options:
+ --url <url>                       URL of the server. For example: https://myaccount.visualstudio.com or
+                                   http://onprem:8080/tfs
+ --auth <type>                     Authentication type. Valid values are:
+                                    pat        (Personal access token)
+                                    negotiate  (Kerberos or NTLM)
+                                    alt        (Basic authentication)
+                                    integrated (Windows default credentials)
+                                    sp         (Service Principal)
+ --token <token>                   Used with --auth pat. Personal access token.
+ --userName <userName>             Used with --auth negotiate or --auth alt. Specify the Windows user
+                                   name in the format: domain\userName or userName@domain.com
+ --password <password>             Used with --auth negotiate or --auth alt.
+ --unattended                      Unattended configuration. You will not be prompted. All answers must
+                                   be supplied to the command line.
+ --version                         Prints the agent version
+ --commit                          Prints the agent commit
+ --help                            Prints the help
+
+CLI-WIDTH-OPTIONS-(35-CHARS)-------CLI-WIDTH-DESCRIPTION-(70-CHARS)--------------------------------------
+Configure options:
+ --pool <pool>                     Pool name for the agent to join
+ --agent <agent>                   Agent name
+ --replace                         Replace the agent in a pool. If another agent is listening by that
+                                   name, it will start failing with a conflict.
+ --work <workDirectory>            Work directory where job data is stored. Defaults to _work under the
+                                   root of the agent directory. The work directory is owned by a given
+                                   agent and should not share between multiple agents.
+ --acceptTeeEula                   macOS and Linux only. Accept the TEE end user license agreement.
+ --gitUseSChannel                  Windows only. Tell Git to use Windows' native cert store.
+ --alwaysExtractTask               Perform an unzip for tasks for each pipeline step.
+ --disableLogUploads               Don't stream or send console log output to the server. Instead, you may retrieve them from the agent host's filesystem after the job completes. NOTE: Cannot be used with --reStreamLogsToFiles, it will cause an error.
+ --reStreamLogsToFiles             Stream or send console log output to the server as well as a log file on the agent host's filesystem. NOTE: Cannot be used with --disableLogUploads, it will cause an error.
+
+CLI-WIDTH-OPTIONS-(35-CHARS)-------CLI-WIDTH-DESCRIPTION-(70-CHARS)--------------------------------------
+Startup options (Windows only):
+ --runAsService                    Configure the agent to run as a Windows service. Requires
+                                   administrator permission.
+ --preventServiceStart             Configure Windows service to not run immediately after configuration.
+ --runAsAutoLogon                  Configure auto logon and run the agent on startup. Requires
+                                   administrator permission.
+ --windowsLogonAccount <account>   Used with --runAsService or --runAsAutoLogon. Specify the Windows user
+                                   name in the format: domain\userName or userName@domain.com
+ --windowsLogonPassword <password> Used with --runAsService or --runAsAutoLogon. Windows logon password.
+ --overwriteAutoLogon              Used with --runAsAutoLogon. Overwrite any existing auto logon on the
+                                   machine.
+ --noRestart                       Used with --runAsAutoLogon. Do not restart after configuration
+                                   completes.
+
+CLI-WIDTH-OPTIONS-(35-CHARS)-------CLI-WIDTH-DESCRIPTION-(70-CHARS)--------------------------------------
+Deployment group options:
+ --deploymentGroup                 Configure the agent as a deployment group agent.
+ --projectName <name>              Used with --deploymentGroup. Team project name.
+ --addDeploymentGroupTags          Used with --deploymentGroup. Specify to add deployment group tags.
+ --deploymentGroupName <name>      Used with --deploymentGroup. Deployment group for the agent to join.
+ --deploymentGroupTags <tags>      Used with --addDeploymentGroupTags. A comma separated list of tags for
+                                   the deployment group agent. For example "web, db".
+
+CLI-WIDTH-TOTAL-(105-CHARS)------------------------------------------------------------------------------
+Environment variables:
+Any command line argument can be specified as an environment variable. Use the format
+VSTS_AGENT_INPUT_<ARGUMENT_NAME>. For example: VSTS_AGENT_INPUT_PASSWORD
+
+CLI-WIDTH-UNLIMITED-FOR-EXAMPLES-----
+Unattended configuration examples:
+
+VSTS authentication
+./config.sh --unattended --url https://myaccount.visualstudio.com --auth pat --token myToken --pool default --agent myAgent --acceptTeeEula
+
+On-premises TFS with integrated authentication (Windows only)
+.\config.cmd --unattended --url http://mylocaltfsserver:8080/tfs --auth integrated --pool default --agent myAgent
+
+On-premises TFS with negotiate authentication
+./config.sh --unattended --url http://mylocaltfsserver:8080/tfs --auth negotiate --userName myDomain\myUserName --password myPassword --pool default --agent myAgent --acceptTeeEula
+
+Replace existing agent with the same agent name
+./config.sh --unattended --url https://myaccount.visualstudio.com --auth pat --token myToken --pool default --agent myAgent --replace --acceptTeeEula
+
+Specify the agent work directory (Windows)
+.\config.cmd --unattended --url https://myaccount.visualstudio.com --auth pat --token myToken --pool default --agent myAgent --work D:\agent_work
+
+Specify the agent work directory (macOS and Linux)
+./config.sh --unattended  --url https://myaccount.visualstudio.com --auth pat --token myToken --pool default --agent myAgent --work usr/local/agent_work
+
+Run as a Windows service that logs on as NetworkService (Windows only)
+.\config.cmd --unattended --url https://myaccount.visualstudio.com --auth pat --token myToken --pool default --agent myAgent --runAsService
+
+Run as a Windows service that logs on as a domain account (Windows only)
+.\config.cmd --unattended --url https://myaccount.visualstudio.com --auth pat --token myToken --pool default --agent myAgent --runAsService --windowsLogonAccount myDomain\myUserName --windowsLogonPassword myPassword
+
+Run as a Windows service that logs on as a domain account (Windows only) and doesn't start service immediately
+.\config.cmd --unattended --url https://myaccount.visualstudio.com --auth pat --token myToken --pool default --agent myAgent --runAsService --preventServiceStart --windowsLogonAccount myDomain\myUserName --windowsLogonPassword myPassword 
+
+Run as an auto logon agent (Windows only)
+.\config.cmd --unattended --url https://myaccount.visualstudio.com --auth pat --token myToken --pool default --agent myAgent --runAsAutoLogon --windowsLogonAccount myDomain\myUserName --windowsLogonPassword myPassword
+
+Run as an auto logon agent and do not restart after configuration (Windows only)
+.\config.cmd --unattended --url https://myaccount.visualstudio.com --auth pat --token myToken --pool default --agent myAgent --runAsAutoLogon --windowsLogonAccount myDomain\myUserName --windowsLogonPassword myPassword --noRestart
+
+Deployment group agent run as Windows service that logs on as Local System (Windows only)
+.\config.cmd --unattended --deploymentGroup --url https://myaccount.visualstudio.com --auth pat --token myToken --projectName myProject --deploymentGroupName myDeploymentGroup --agent myAgent --addDeploymentGroupTags --deploymentGroupTags "web, db" --runAsService --windowsLogonAccount "NT AUTHORITY\SYSTEM"
+
+Deployment group agent with tags
+./config.sh --unattended --deploymentGroup --url https://myaccount.visualstudio.com --auth pat --token myToken --projectName myProject --deploymentGroupName myDeploymentGroup --agent myAgent --addDeploymentGroupTags --deploymentGroupTags "web, db" --runAsService --windowsLogonAccount "NT AUTHORITY\SYSTEM" --acceptTeeEula

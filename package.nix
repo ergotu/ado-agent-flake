@@ -27,11 +27,13 @@ buildDotnetModule (finalAttrs: {
     ./patches/env-sh-use-agent-root.patch
   ];
 
-  # Add nuget.org so nuget-to-json can resolve standard packages
-  postPatch = ''
-    substituteInPlace src/NuGet.Config \
-      --replace-fail '</packageSources>' \
-        '<add key="nuget.org" value="https://api.nuget.org/v3/index.json"/></packageSources>'
+  # Azure DevOps private feed for azuredevops-testresultparser
+  nugetAzureFeed = "https://pkgs.dev.azure.com/mseng/PipelineTools/_packaging/nugetvssprivate/nuget/v3/index.json";
+
+  preConfigure = ''
+    if curl --connect-timeout 5 -sS "${finalAttrs.nugetAzureFeed}" > /dev/null 2>&1; then
+      dotnet nuget add source "${finalAttrs.nugetAzureFeed}" --name azure-feed
+    fi
   '';
 
   dotnet-sdk = dotnetCorePackages.sdk_8_0;
@@ -51,6 +53,8 @@ buildDotnetModule (finalAttrs: {
     "-p:PackageRuntime=${dotnetCorePackages.systemToDotnetRid stdenv.hostPlatform.system}"
     "-p:TargetFrameworks=net8.0"
   ];
+
+  dotnetInstallFlags = [ "--framework net8.0" ];
 
   # Git repo needed for GenerateConstant MSBuild target (git rev-parse HEAD)
   unpackPhase = ''
@@ -106,13 +110,25 @@ buildDotnetModule (finalAttrs: {
     mkdir -p $out/lib/externals
     ln -s ${nodejs_20} $out/lib/externals/node20_1
 
+    # Install localization files (required for CLI output strings)
+    cp -r src/Misc/layoutbin/en-US $out/lib/azure-pipelines-agent/
+    cp -r src/Misc/layoutbin/de-DE $out/lib/azure-pipelines-agent/
+    cp -r src/Misc/layoutbin/es-ES $out/lib/azure-pipelines-agent/
+    cp -r src/Misc/layoutbin/fr-FR $out/lib/azure-pipelines-agent/
+    cp -r src/Misc/layoutbin/it-IT $out/lib/azure-pipelines-agent/
+    cp -r src/Misc/layoutbin/ja-JP $out/lib/azure-pipelines-agent/
+    cp -r src/Misc/layoutbin/ko-KR $out/lib/azure-pipelines-agent/
+    cp -r src/Misc/layoutbin/ru-RU $out/lib/azure-pipelines-agent/
+    cp -r src/Misc/layoutbin/zh-CN $out/lib/azure-pipelines-agent/
+    cp -r src/Misc/layoutbin/zh-TW $out/lib/azure-pipelines-agent/
+
     # Wrapper args for all executables
     makeWrapperArgs+=(
       --run 'export AGENT_ROOT="''${AGENT_ROOT:-"$HOME/.azure-pipelines-agent"}"'
-      --run 'mkdir -p "$AGENT_ROOT"'
+      --run 'mkdir -p "$AGENT_ROOT/_diag"'
+      --set-default AGENT_DIAGLOGPATH '$AGENT_ROOT/_diag'
       --set AGENT_DISABLEUPDATE 1
       --prefix PATH : ${lib.makeBinPath [ gitMinimal ]}
-      --chdir "$out"
     )
   '';
 

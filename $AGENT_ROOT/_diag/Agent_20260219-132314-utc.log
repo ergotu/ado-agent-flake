@@ -1,0 +1,77 @@
+﻿[2026-02-19 13:23:14Z INFO HostContext] HTTP Trace Environment Variable: ''
+[2026-02-19 13:23:14Z INFO HostContext] HTTP trace not enabled - environment variable not set or false
+[2026-02-19 13:23:14Z VERB AgentProcess] Entering MainAsync
+[2026-02-19 13:23:14Z INFO AgentProcess] Agent package linux-x64.
+[2026-02-19 13:23:14Z INFO AgentProcess] Running on Linux (X64).
+[2026-02-19 13:23:14Z INFO AgentProcess] RuntimeInformation: NixOS 26.05 (Yarara).
+[2026-02-19 13:23:14Z VERB Terminal] Entering Initialize
+[2026-02-19 13:23:14Z INFO AgentProcess] Version: 4.268.0
+[2026-02-19 13:23:14Z INFO AgentProcess] Commit: 64b79ac46424365c605a07c1dc5aee18e00fb43a
+[2026-02-19 13:23:14Z INFO AgentProcess] Culture: en-US
+[2026-02-19 13:23:14Z INFO AgentProcess] UI Culture: en-US
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO AgentProcess] Validating directory permissions for: '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z VERB PromptManager] Entering Initialize
+[2026-02-19 13:23:14Z INFO CommandSettings] Run {
+  "Commit": false,
+  "Diagnostics": false,
+  "RunOnce": false,
+  "StartupType": null,
+  "DebugMode": false,
+  "Help": false,
+  "Version": false
+}
+[2026-02-19 13:23:14Z INFO AgentProcess] Command line arguments parsed successfully - ready for command execution
+[2026-02-19 13:23:14Z VERB Agent] Entering Initialize
+[2026-02-19 13:23:14Z VERB AgentProcess] Delegating command execution to Agent service
+[2026-02-19 13:23:14Z VERB Agent] Entering ExecuteCommand
+[2026-02-19 13:23:14Z VERB Agent] Initializing core services...
+[2026-02-19 13:23:14Z VERB VstsAgentWebProxy] Entering Initialize
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO HostContext] Well known config file 'Proxy': '/home/ergotu/.azure-pipelines-agent/.proxy'
+[2026-02-19 13:23:14Z VERB VstsAgentWebProxy] Proxy address: 
+[2026-02-19 13:23:14Z INFO VstsAgentWebProxy] No proxy setting found.
+[2026-02-19 13:23:14Z VERB AgentCertificateManager] Entering Initialize
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO HostContext] Well known config file 'Certificates': '/home/ergotu/.azure-pipelines-agent/.certificates'
+[2026-02-19 13:23:14Z INFO AgentCertificateManager] No certificate setting found.
+[2026-02-19 13:23:14Z VERB ConfigurationManager] Entering Initialize
+[2026-02-19 13:23:14Z VERB ConfigurationManager] Creating _store
+[2026-02-19 13:23:14Z VERB ConfigurationStore] Entering Initialize
+[2026-02-19 13:23:14Z INFO ConfigurationStore] currentAssemblyLocation: {0}
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Bin': '/nix/store/q3jx690067hi0jx5qjq0i0ivcri99dpw-azure-pipelines-agent-4.268.0/lib/azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO ConfigurationStore] binPath: {0}
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO ConfigurationStore] RootFolder: {0}
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO HostContext] Well known config file 'Agent': '/home/ergotu/.azure-pipelines-agent/.agent'
+[2026-02-19 13:23:14Z INFO ConfigurationStore] ConfigFilePath: {0}
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO HostContext] Well known config file 'Credentials': '/home/ergotu/.azure-pipelines-agent/.credentials'
+[2026-02-19 13:23:14Z INFO ConfigurationStore] CredFilePath: {0}
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO HostContext] Well known config file 'Service': '/home/ergotu/.azure-pipelines-agent/.service'
+[2026-02-19 13:23:14Z INFO ConfigurationStore] ServiceConfigFilePath: {0}
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO HostContext] Well known config file 'Autologon': '/home/ergotu/.azure-pipelines-agent/.autologon'
+[2026-02-19 13:23:14Z INFO ConfigurationStore] AutoLogonSettingsFilePath: {0}
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO HostContext] Well known config file 'Options': '/home/ergotu/.azure-pipelines-agent/.options'
+[2026-02-19 13:23:14Z INFO ConfigurationStore] RuntimeOptionsFilePath: {0}
+[2026-02-19 13:23:14Z INFO HostContext] Well known directory 'Root': '/home/ergotu/.azure-pipelines-agent'
+[2026-02-19 13:23:14Z INFO HostContext] Well known config file 'SetupInfo': '/home/ergotu/.azure-pipelines-agent/.setup_info'
+[2026-02-19 13:23:14Z INFO ConfigurationStore] SetupInfoFilePath: {0}
+[2026-02-19 13:23:14Z VERB ConfigurationManager] store created
+[2026-02-19 13:23:14Z VERB LocationServer] Entering Initialize
+[2026-02-19 13:23:14Z INFO Agent] Loading agent configuration from settings store
+[2026-02-19 13:23:14Z INFO ConfigurationManager] LoadSettings
+[2026-02-19 13:23:14Z INFO ConfigurationStore] IsConfigured()
+[2026-02-19 13:23:14Z INFO ConfigurationStore] IsConfigured: False
+[2026-02-19 13:23:14Z INFO ConfigurationManager] Is configured: False
+[2026-02-19 13:23:14Z ERR  Terminal] WRITE ERROR: An error occurred: Not configured
+[2026-02-19 13:23:14Z ERR  AgentProcess] Unhandled exception during agent startup - initialization failed
+[2026-02-19 13:23:14Z ERR  AgentProcess] System.InvalidOperationException: Not configured
+   at Microsoft.VisualStudio.Services.Agent.Listener.Configuration.ConfigurationManager.LoadSettings() in /_/src/Agent.Listener/Configuration/ConfigurationManager.cs:line 76
+   at Microsoft.VisualStudio.Services.Agent.Listener.Agent.ExecuteCommand(CommandSettings command) in /_/src/Agent.Listener/Agent.cs:line 197
+   at Microsoft.VisualStudio.Services.Agent.Listener.Program.MainAsync(IHostContext context, String[] args) in /_/src/Agent.Listener/Program.cs:line 172
