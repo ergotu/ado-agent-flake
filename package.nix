@@ -126,7 +126,7 @@ buildDotnetModule (finalAttrs: {
     makeWrapperArgs+=(
       --run 'export AGENT_ROOT="''${AGENT_ROOT:-"$HOME/.azure-pipelines-agent"}"'
       --run 'mkdir -p "$AGENT_ROOT/_diag"'
-      --set-default AGENT_DIAGLOGPATH '$AGENT_ROOT/_diag'
+      --run 'export AGENT_DIAGLOGPATH="''${AGENT_DIAGLOGPATH:-"$AGENT_ROOT/_diag"}"'
       --set AGENT_DISABLEUPDATE 1
       --prefix PATH : ${lib.makeBinPath [ gitMinimal ]}
     )
