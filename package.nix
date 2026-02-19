@@ -162,6 +162,6 @@ buildDotnetModule (finalAttrs: {
       "aarch64-linux"
     ];
     sourceProvenance = with lib.sourceTypes; [ fromSource ];
-    mainProgram = "run.sh";
+    mainProgram = "Agent.Listener";
   };
 })
