@@ -16,9 +16,8 @@ let
 
         package = lib.mkOption {
           type = lib.types.package;
-          default = pkgs.azure-pipelines-agent;
-          defaultText = lib.literalExpression "pkgs.azure-pipelines-agent";
-          description = "The azure-pipelines-agent package to use.";
+          description = "The azure-pipelines-agent package to use. Must be provided from this flake.";
+          example = lib.literalExpression "inputs.ado-agent-flake.packages.\${pkgs.system}.azure-pipelines-agent";
         };
 
         url = lib.mkOption {
@@ -37,7 +36,8 @@ let
           type = lib.types.path;
           description = ''
             Path to a file containing the Personal Access Token (PAT) for authentication.
-            This file must be readable by the agent's system user.
+            The file only needs to be readable by root — systemd's `LoadCredential`
+            securely passes it to the service.
             The file should not be in the Nix store to protect the secret.
           '';
           example = "/run/secrets/azure-pipelines-token";
@@ -85,70 +85,60 @@ let
 
   enabledInstances = lib.filterAttrs (_: inst: inst.enable) cfg.instances;
 
-  mkService = instanceName: inst: {
-    description = "Azure DevOps Pipelines Agent (${instanceName})";
-    wants = [ "network-online.target" ];
-    after = [
-      "network.target"
-      "network-online.target"
-    ];
-    wantedBy = [ "multi-user.target" ];
+  mkService =
+    instanceName: inst:
+    let
+      stateDir = "azure-pipelines-agent/${instanceName}";
+      agentDir = "/var/lib/${stateDir}";
+      workDir = if inst.workDir != null then inst.workDir else "${agentDir}/_work";
+      configArgs = lib.concatStringsSep " " (
+        [
+          "--unattended"
+          "--url ${lib.escapeShellArg inst.url}"
+          "--auth pat"
+          "--token $(cat \"$CREDENTIALS_DIRECTORY/token\")"
+          "--pool ${lib.escapeShellArg inst.pool}"
+          "--agent ${lib.escapeShellArg inst.name}"
+          "--work ${lib.escapeShellArg workDir}"
+          "--disableupdate"
+          "--acceptTeeEula"
+        ]
+        ++ lib.optional inst.replace "--replace"
+      );
+    in
+    {
+      description = "Azure DevOps Pipelines Agent (${instanceName})";
+      wants = [ "network-online.target" ];
+      after = [
+        "network.target"
+        "network-online.target"
+      ];
+      wantedBy = [ "multi-user.target" ];
 
-    environment =
-      let
-        agentDir = "/var/lib/azure-pipelines-agent/${instanceName}";
-      in
-      {
+      environment = {
         AGENT_ROOT = agentDir;
-        AGENT_DIAGLOGPATH = "${agentDir}/_diag";
-      }
-      // inst.extraEnvironment;
+      } // inst.extraEnvironment;
 
-    path = [
-      inst.package
-    ] ++ inst.extraPackages;
+      path = [
+        inst.package
+      ] ++ inst.extraPackages;
 
-    serviceConfig =
-      let
-        stateDir = "azure-pipelines-agent/${instanceName}";
-        workDir = if inst.workDir != null then inst.workDir else "/var/lib/${stateDir}/_work";
-        agentDir = "/var/lib/${stateDir}";
-        configArgs = lib.concatStringsSep " " (
-          [
-            "--unattended"
-            "--url ${lib.escapeShellArg inst.url}"
-            "--auth pat"
-            "--token $(cat ${lib.escapeShellArg (toString inst.tokenFile)})"
-            "--pool ${lib.escapeShellArg inst.pool}"
-            "--agent ${lib.escapeShellArg inst.name}"
-            "--work ${lib.escapeShellArg workDir}"
-            "--disableupdate"
-            "--acceptTeeEula"
-          ]
-          ++ lib.optional inst.replace "--replace"
-        );
-      in
-      {
+      serviceConfig = {
         Type = "simple";
         User = "azure-pipelines-agent";
         Group = "azure-pipelines-agent";
         StateDirectory = stateDir;
         WorkingDirectory = agentDir;
+        LoadCredential = "token:${toString inst.tokenFile}";
 
-        ExecStartPre = "!${pkgs.writeShellScript "configure-azure-pipelines-agent-${instanceName}" ''
-          export AGENT_ROOT="${agentDir}"
+        ExecStartPre = "${pkgs.writeShellScript "configure-azure-pipelines-agent-${instanceName}" ''
+          mkdir -p ${lib.escapeShellArg workDir}
           if [ ! -f "${agentDir}/.credentials" ]; then
-            mkdir -p "${agentDir}"
             ${inst.package}/bin/config.sh ${configArgs}
           fi
         ''}";
 
-        ExecStart = "${pkgs.writeShellScript "run-azure-pipelines-agent-${instanceName}" ''
-          export AGENT_ROOT="${agentDir}"
-          exec ${inst.package}/bin/run.sh
-        ''}";
-
-        ExecStopPost = lib.mkDefault "";
+        ExecStart = "${inst.package}/bin/run.sh";
 
         Restart = "always";
         RestartSec = 5;
@@ -163,7 +153,7 @@ let
           workDir
         ];
       };
-  };
+    };
 
 in
 {
