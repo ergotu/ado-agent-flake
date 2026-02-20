@@ -1,3 +1,4 @@
+inputs:
 {
   config,
   lib,
@@ -16,8 +17,9 @@ let
 
         package = lib.mkOption {
           type = lib.types.package;
-          description = "The azure-pipelines-agent package to use. Must be provided from this flake.";
-          example = lib.literalExpression "inputs.ado-agent-flake.packages.\${pkgs.system}.azure-pipelines-agent";
+          default = inputs.self.packages.${pkgs.system}.azure-pipelines-agent;
+          defaultText = lib.literalExpression "inputs.ado-agent-flake.packages.\${pkgs.system}.azure-pipelines-agent";
+          description = "The azure-pipelines-agent package to use.";
         };
 
         url = lib.mkOption {
@@ -54,6 +56,8 @@ let
           default = null;
           description = ''
             Work directory path. Defaults to `_work` inside the agent's state directory.
+            When set to an external path, the directory is created automatically by
+            a root-prefixed ExecStartPre. Ensure the parent directory exists.
           '';
         };
 
@@ -85,18 +89,27 @@ let
 
   enabledInstances = lib.filterAttrs (_: inst: inst.enable) cfg.instances;
 
+  # Hash config-relevant settings to detect when reconfiguration is needed
+  configHash =
+    inst:
+    builtins.hashString "sha256" (builtins.toJSON {
+      inherit (inst) url pool name replace;
+      workDir = inst.workDir or "";
+    });
+
   mkService =
     instanceName: inst:
     let
       stateDir = "azure-pipelines-agent/${instanceName}";
       agentDir = "/var/lib/${stateDir}";
       workDir = if inst.workDir != null then inst.workDir else "${agentDir}/_work";
+      user = "ado-${instanceName}";
+      hash = configHash inst;
       configArgs = lib.concatStringsSep " " (
         [
           "--unattended"
           "--url ${lib.escapeShellArg inst.url}"
           "--auth pat"
-          "--token $(cat \"$CREDENTIALS_DIRECTORY/token\")"
           "--pool ${lib.escapeShellArg inst.pool}"
           "--agent ${lib.escapeShellArg inst.name}"
           "--work ${lib.escapeShellArg workDir}"
@@ -125,33 +138,53 @@ let
 
       serviceConfig = {
         Type = "simple";
-        User = "azure-pipelines-agent";
-        Group = "azure-pipelines-agent";
+        User = user;
+        Group = user;
         StateDirectory = stateDir;
         WorkingDirectory = agentDir;
         LoadCredential = "token:${toString inst.tokenFile}";
 
-        ExecStartPre = "${pkgs.writeShellScript "configure-azure-pipelines-agent-${instanceName}" ''
-          mkdir -p ${lib.escapeShellArg workDir}
-          if [ ! -f "${agentDir}/.credentials" ]; then
-            ${inst.package}/bin/config.sh ${configArgs}
-          fi
-        ''}";
+        ExecStartPre = [
+          # Root-prefixed: ensure work directory exists with correct ownership
+          "+${pkgs.writeShellScript "prepare-dirs-${instanceName}" ''
+            mkdir -p ${lib.escapeShellArg workDir}
+            chown ${user}:${user} ${lib.escapeShellArg workDir}
+          ''}"
+          # Configure agent (as service user); token passed via env var to
+          # avoid leaking it in /proc/PID/cmdline
+          "${pkgs.writeShellScript "configure-azure-pipelines-agent-${instanceName}" ''
+            export VSTS_AGENT_INPUT_TOKEN="$(cat "$CREDENTIALS_DIRECTORY/token")"
+
+            HASH_FILE="${agentDir}/.config-hash"
+            if [ ! -f "${agentDir}/.credentials" ] || \
+               [ ! -f "$HASH_FILE" ] || \
+               [ "$(cat "$HASH_FILE")" != "${hash}" ]; then
+              # Remove stale local config so config.sh can re-register
+              rm -f "${agentDir}/.credentials" "${agentDir}/.agent"
+              ${inst.package}/bin/config.sh ${configArgs}
+              printf '%s' "${hash}" > "$HASH_FILE"
+            fi
+          ''}"
+        ];
 
         ExecStart = "${inst.package}/bin/run.sh";
 
         Restart = "always";
         RestartSec = 5;
+        TimeoutStopSec = "5min";
 
         # Hardening
         NoNewPrivileges = true;
         ProtectSystem = "strict";
         ProtectHome = true;
         PrivateTmp = true;
-        ReadWritePaths = [
-          agentDir
-          workDir
-        ];
+        ProtectKernelTunables = true;
+        ProtectKernelModules = true;
+        ProtectControlGroups = true;
+        RestrictSUIDSGID = true;
+        PrivateDevices = true;
+        SystemCallArchitectures = "native";
+        ReadWritePaths = lib.optional (inst.workDir != null) workDir;
       };
     };
 
@@ -166,13 +199,32 @@ in
   };
 
   config = lib.mkIf (enabledInstances != { }) {
-    users.users.azure-pipelines-agent = {
-      isSystemUser = true;
-      group = "azure-pipelines-agent";
-      home = "/var/lib/azure-pipelines-agent";
-    };
+    assertions = lib.concatLists (
+      lib.mapAttrsToList (name: inst: [
+        {
+          assertion = lib.hasPrefix "https://" inst.url;
+          message = "services.azure-pipelines-agent.instances.${name}.url must start with https://";
+        }
+        {
+          assertion = !(lib.hasPrefix "/nix/store" (toString inst.tokenFile));
+          message = "services.azure-pipelines-agent.instances.${name}.tokenFile must not be a Nix store path (secret would be world-readable)";
+        }
+      ]) enabledInstances
+    );
 
-    users.groups.azure-pipelines-agent = { };
+    users.users = lib.mapAttrs' (
+      instanceName: _:
+      lib.nameValuePair "ado-${instanceName}" {
+        isSystemUser = true;
+        group = "ado-${instanceName}";
+        home = "/var/lib/azure-pipelines-agent/${instanceName}";
+        description = "Azure DevOps Pipelines Agent (${instanceName})";
+      }
+    ) enabledInstances;
+
+    users.groups = lib.mapAttrs' (
+      instanceName: _: lib.nameValuePair "ado-${instanceName}" { }
+    ) enabledInstances;
 
     systemd.services = lib.mapAttrs' (
       instanceName: inst:

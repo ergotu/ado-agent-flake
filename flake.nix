@@ -12,19 +12,24 @@
       systems = [
         "x86_64-linux"
         "aarch64-linux"
+        "aarch64-darwin"
       ];
 
       perSystem =
-        { pkgs, system, ... }:
+        { pkgs, ... }:
         {
-          packages = {
+          packages = rec {
             azure-pipelines-agent = pkgs.callPackage ./package.nix { };
-            default = pkgs.callPackage ./package.nix { };
+            default = azure-pipelines-agent;
           };
         };
 
       flake = {
-        nixosModules.default = import ./module.nix;
+        nixosModules.default = import ./module.nix inputs;
+
+        overlays.default = _final: prev: {
+          azure-pipelines-agent = prev.callPackage ./package.nix { };
+        };
       };
     };
 }
