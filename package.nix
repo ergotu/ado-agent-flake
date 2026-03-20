@@ -6,6 +6,7 @@
   glibc,
   lib,
   nodejs_20,
+  nodejs_24,
   stdenv,
 }:
 
@@ -115,9 +116,10 @@ buildDotnetModule (finalAttrs: {
     substituteInPlace $out/lib/azure-pipelines-agent/run.sh \
       --replace-fail '"$DIR"/bin/Agent.Listener' "$out/bin/Agent.Listener"
 
-    # Link Nix-provided Node.js for task execution
+    # Link Nix-provided Node.js runtimes for task execution
     mkdir -p $out/lib/externals
     ln -s ${nodejs_20} $out/lib/externals/node20_1
+    ln -s ${nodejs_24} $out/lib/externals/node24
 
     # Install localization files (required for CLI output strings)
     for dir in src/Misc/layoutbin/*-*; do
