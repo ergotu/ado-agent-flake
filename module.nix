@@ -9,6 +9,30 @@ inputs:
 let
   cfg = config.services.azure-pipelines-agent;
 
+  defaultAgentPackages = with pkgs; [
+    bash
+    bzip2
+    coreutils
+    curl
+    findutils
+    gawk
+    gitMinimal
+    gnugrep
+    gnused
+    gnutar
+    gzip
+    jq
+    openssh
+    procps
+    rsync
+    unzip
+    util-linux
+    wget
+    which
+    xz
+    zip
+  ];
+
   instanceModule =
     { name, config, ... }:
     {
@@ -65,6 +89,16 @@ let
           type = lib.types.bool;
           default = true;
           description = "Replace an existing agent with the same name during registration.";
+        };
+
+        includeDefaultPackages = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = ''
+            Add a baseline set of CLI tools to the agent PATH for common Azure Pipelines
+            tasks and scripts. This includes tools such as `bash`, `curl`, `tar`,
+            `unzip`, `zip`, `findutils`, `grep`, `sed`, `awk`, `jq`, `ssh`, and `rsync`.
+          '';
         };
 
         extraPackages = lib.mkOption {
@@ -134,7 +168,7 @@ let
 
       path = [
         inst.package
-      ] ++ inst.extraPackages;
+      ] ++ lib.optionals inst.includeDefaultPackages defaultAgentPackages ++ inst.extraPackages;
 
       serviceConfig = {
         Type = "simple";
