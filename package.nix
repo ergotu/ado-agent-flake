@@ -90,12 +90,21 @@ buildDotnetModule (finalAttrs: {
   postInstall = ''
     # Install shell scripts from layoutroot
     install -m755 src/Misc/layoutroot/config.sh $out/lib/azure-pipelines-agent/
+    install -m755 src/Misc/layoutroot/reauth.sh $out/lib/azure-pipelines-agent/
     install -m755 src/Misc/layoutroot/run.sh    $out/lib/azure-pipelines-agent/
     install -m755 src/Misc/layoutroot/env.sh    $out/lib/azure-pipelines-agent/
 
-    # Fix config.sh: use Nix-provided ldd, point ldd checks at .NET runtime libs,
-    # bypass ldconfig ICU check (Nix guarantees deps are present)
+    # Fix config.sh and reauth.sh: use Nix-provided ldd/ldconfig, point ldd checks
+    # at .NET runtime libs, bypass ldconfig ICU check (Nix guarantees deps are present)
     substituteInPlace $out/lib/azure-pipelines-agent/config.sh \
+      --replace-fail 'LDCONFIG="ldconfig"' 'LDCONFIG="${glibc.bin}/bin/ldconfig"' \
+      --replace-fail 'command -v ldd' 'command -v ${glibc.bin}/bin/ldd' \
+      --replace-fail 'ldd ./bin' '${glibc.bin}/bin/ldd ${finalAttrs.dotnet-runtime}/share/dotnet/shared/Microsoft.NETCore.App/${finalAttrs.dotnet-runtime.version}/' \
+      --replace-fail './bin/Agent.Listener' "$out/bin/Agent.Listener" \
+      --replace-fail '$LDCONFIG -NXv "''${libpath//:/}" 2>&1 | grep libicu >/dev/null 2>&1' 'true'
+
+    substituteInPlace $out/lib/azure-pipelines-agent/reauth.sh \
+      --replace-fail 'LDCONFIG="ldconfig"' 'LDCONFIG="${glibc.bin}/bin/ldconfig"' \
       --replace-fail 'command -v ldd' 'command -v ${glibc.bin}/bin/ldd' \
       --replace-fail 'ldd ./bin' '${glibc.bin}/bin/ldd ${finalAttrs.dotnet-runtime}/share/dotnet/shared/Microsoft.NETCore.App/${finalAttrs.dotnet-runtime.version}/' \
       --replace-fail './bin/Agent.Listener' "$out/bin/Agent.Listener" \
@@ -126,6 +135,7 @@ buildDotnetModule (finalAttrs: {
 
   executables = [
     "config.sh"
+    "reauth.sh"
     "run.sh"
     "env.sh"
     "Agent.Listener"
