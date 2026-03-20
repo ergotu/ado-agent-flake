@@ -113,7 +113,6 @@ let
           "--pool ${lib.escapeShellArg inst.pool}"
           "--agent ${lib.escapeShellArg inst.name}"
           "--work ${lib.escapeShellArg workDir}"
-          "--disableupdate"
           "--acceptTeeEula"
         ]
         ++ lib.optional inst.replace "--replace"
@@ -130,6 +129,7 @@ let
 
       environment = {
         AGENT_ROOT = agentDir;
+        "agent.disableupdate" = "1";
       } // inst.extraEnvironment;
 
       path = [
@@ -149,6 +149,8 @@ let
           "+${pkgs.writeShellScript "prepare-dirs-${instanceName}" ''
             mkdir -p ${lib.escapeShellArg workDir}
             chown ${user}:${user} ${lib.escapeShellArg workDir}
+            install -m644 ${inst.package}/lib/azure-pipelines-agent/license.html ${agentDir}/license.html
+            chown ${user}:${user} ${agentDir}/license.html
           ''}"
           # Configure agent (as service user); token passed via env var to
           # avoid leaking it in /proc/PID/cmdline

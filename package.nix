@@ -93,6 +93,7 @@ buildDotnetModule (finalAttrs: {
     install -m755 src/Misc/layoutroot/reauth.sh $out/lib/azure-pipelines-agent/
     install -m755 src/Misc/layoutroot/run.sh    $out/lib/azure-pipelines-agent/
     install -m755 src/Misc/layoutroot/env.sh    $out/lib/azure-pipelines-agent/
+    install -m644 src/Misc/layoutroot/license.html $out/lib/azure-pipelines-agent/
 
     # Fix config.sh and reauth.sh: use Nix-provided ldd/ldconfig, point ldd checks
     # at .NET runtime libs, bypass ldconfig ICU check (Nix guarantees deps are present)
@@ -128,7 +129,6 @@ buildDotnetModule (finalAttrs: {
       --run 'export AGENT_ROOT="''${AGENT_ROOT:-"$HOME/.azure-pipelines-agent"}"'
       --run 'mkdir -p "$AGENT_ROOT/_diag"'
       --run 'export AGENT_DIAGLOGPATH="''${AGENT_DIAGLOGPATH:-"$AGENT_ROOT/_diag"}"'
-      --set AGENT_DISABLEUPDATE 1
       --prefix PATH : ${lib.makeBinPath [ gitMinimal ]}
     )
   '';
